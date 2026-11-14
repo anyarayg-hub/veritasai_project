@@ -1,5 +1,5 @@
 """
-Model-side helpers: prices -> crash labels + features for each hype spike.
+Model-side helpers: prices -> sharp-drop labels + features for each hype spike.
 """
 
 import numpy as np
@@ -37,7 +37,7 @@ def build_dataset(spikes, prices, market="SPY"):
     If the spike date is a market holiday, the next trading day is used.
 
     Label `crashed` = 1 if the lowest Low over the next HORIZON trading days
-    is CRASH_DROP or more below the entry price.
+    is CRASH_DROP or more below the entry price. (The notebook relabels with 10%.)
 
     Price features only use data up to and including the spike day.
     """
@@ -63,15 +63,15 @@ def build_dataset(spikes, prices, market="SPY"):
             "ticker": r.ticker,
             # hype features
             "mentions": r.mentions,
-            "log_mentions": np.log1p(r.mentions),
-            "spike_ratio": r.mentions / max(r.avg_before, 0.1),
+            "log_mentions": np.log1p(r.mentions),                          # clue 1
+            "spike_ratio": r.mentions / max(r.avg_before, 0.1),            # clue 2
             # price features (all known at the spike day's close)
-            "ret_5d": entry / close[i - 5] - 1,
-            "ret_20d": entry / close[i - LOOKBACK] - 1,
-            "volume_ratio": vol[i] / max(vol[i - LOOKBACK: i].mean(), 1),
-            "volatility_20d": daily_ret.std(),
-            "log_price": np.log(entry),
-            # outcome (NOT a feature)
+            "ret_5d": entry / close[i - 5] - 1,                            # clue 3
+            "ret_20d": entry / close[i - LOOKBACK] - 1,                    # clue 4
+            "volume_ratio": vol[i] / max(vol[i - LOOKBACK: i].mean(), 1),  # clue 5
+            "volatility_20d": daily_ret.std(),                             # clue 6
+            "log_price": np.log(entry),                                    # clue 7
+            # outcome (NOT a feature: it comes from the future)
             "min_future_ret": future_low / entry - 1,
         }
 
@@ -79,7 +79,7 @@ def build_dataset(spikes, prices, market="SPY"):
             j = mkt.index.searchsorted(p.index[i])
             if 5 <= j < len(mkt):
                 mc = mkt["Close"].to_numpy()
-                row["market_ret_5d"] = mc[j] / mc[j - 5] - 1
+                row["market_ret_5d"] = mc[j] / mc[j - 5] - 1               # clue 8
 
         rows.append(row)
 

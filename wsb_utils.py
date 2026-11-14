@@ -23,9 +23,20 @@ STOPWORDS = {
     "NEXT", "NO", "NOW", "OF", "ON", "ONE", "ONTO", "OPEN", "OR", "OUT", "PLAY", "REAL", "SAVE",
     "SEE", "SO", "TELL", "THAT", "THE", "THIS", "TO", "TWO", "UP", "US", "VERY", "WE", "WITH",
     "ALL", "ANY", "ELSE", "EVER", "LIFE", "LOW", "HIGH", "MAN", "RUN", "WELL", "YOU",
+    # Found in our first spike list: words/fragments that matched real tickers
+    "AIN", "AINT", "AWAY", "BEAT", "APP", "APPS", "WAY", "HOLD", "TOO", "DONT", "CANT", "WONT",
+    "ITS", "IM", "LETS", "OUR", "GET", "GOT", "ALSO", "BACK", "WORK", "FAST", "NICE", "TRUE",
 }
 
 US_EASTERN = "America/New_York"
+
+
+def is_shouting(text, threshold=0.7):
+    """True if most letters in the text are capitals (e.g. "THIS IS THE WAY 🚀")."""
+    letters = [c for c in text if c.isalpha()]
+    if len(letters) < 20:
+        return False
+    return sum(c.isupper() for c in letters) / len(letters) > threshold
 
 
 def extract_tickers(text, valid_tickers):
@@ -33,14 +44,24 @@ def extract_tickers(text, valid_tickers):
     Return the set of stock symbols mentioned in one post's text.
     e.g. "GME to the moon $AMC YOLO" -> {"GME", "AMC"}
     Each ticker counts once per post, so spamming a symbol doesn't inflate counts.
+
+    Rules to cut false matches:
+      - "$GME" style tickers are always trusted (if real and not a stopword).
+      - Plain all-caps words must be 2+ letters (single letters like "C" or "S" need a "$").
+      - If the whole post is written in capitals, only "$" tickers count,
+        because every word in a shouted post looks like a ticker.
     """
     if not isinstance(text, str):
         return set()
 
-    # 1-5 letter uppercase words, with or without a leading '$'
-    raw_matches = re.findall(r"\$?\b[A-Z]{1,5}\b", text)
-    tickers = {m.lstrip("$") for m in raw_matches}
+    dollar = {m for m in re.findall(r"\$([A-Za-z]{1,5})\b", text)}
+    dollar = {m.upper() for m in dollar}
 
+    plain = set()
+    if not is_shouting(text):
+        plain = {m for m in re.findall(r"(?<![$\w'])[A-Z]{2,5}(?![\w'])", text)}
+
+    tickers = dollar | plain
     return {t for t in tickers if t in valid_tickers and t not in STOPWORDS}
 
 
@@ -102,6 +123,18 @@ def daily_mentions(df, valid_tickers, date_col="timestamp", text_cols=("title", 
         .size()
         .reset_index(name="mentions")
     )
+
+
+def first_full_day(df, date_col="created", min_posts=100):
+    """
+    First trading day with at least `min_posts` posts.
+    The dataset has a few scattered old posts and then starts properly; anything
+    before this day is too sparse to measure "normal" mention levels.
+    """
+    days = to_trading_day(df[date_col])
+    counts = days.value_counts().sort_index()
+    full = counts[counts >= min_posts]
+    return full.index.min() if len(full) else counts.index.min()
 
 
 def find_spikes(mentions, ratio=5, min_mentions=10, window=14):

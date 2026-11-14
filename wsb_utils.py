@@ -26,6 +26,17 @@ STOPWORDS = {
     # Found in our first spike list: words/fragments that matched real tickers
     "AIN", "AINT", "AWAY", "BEAT", "APP", "APPS", "WAY", "HOLD", "TOO", "DONT", "CANT", "WONT",
     "ITS", "IM", "LETS", "OUR", "GET", "GOT", "ALSO", "BACK", "WORK", "FAST", "NICE", "TRUE",
+    # Found in the top-40 check: brokers, trading slang and English words
+    "RH",    # Robinhood (the trading app), not Restoration Hardware
+    "TD",    # TD Ameritrade (a broker)
+    "HF",    # "hedge funds"
+    "SI",    # "short interest"
+    "RSI",   # Relative Strength Index (a chart indicator)
+    "MA",    # usually "moving average"
+    "PSA",   # "public service announcement"
+    "LINE", "TIME", "HERE", "LOT", "KNOW",
+    # The whole market, not a hype stock (still used as the market feature in model_utils)
+    "SPY",
 }
 
 US_EASTERN = "America/New_York"

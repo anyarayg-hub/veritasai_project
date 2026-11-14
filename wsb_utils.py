@@ -43,7 +43,7 @@ STOPWORDS = {
     "PR",    # "press release"
     "ET",    # "Eastern Time"
     "OI",    # "open interest"
-    "WANT", "OWN",
+    "WANT", "OWN", "IP"
 }
 
 US_EASTERN = "America/New_York"

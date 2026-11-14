@@ -1,0 +1,21 @@
+import openml
+import pandas as pd
+
+# Download dataset by its OpenML ID (43373)
+dataset = openml.datasets.get_dataset(43373)
+
+# Get the data, categorical indicators, and column names
+X, y, categorical_indicator, attribute_names = dataset.get_data(
+    target=dataset.default_target_attribute,
+    dataset_format="dataframe"
+)
+
+# Combine features and target into a single DataFrame
+df = X.copy()
+if y is not None:
+    df[dataset.default_target_attribute] = y
+
+# ---> PASTE / ADD THIS LINE TO SAVE AS CSV <---
+df.to_csv("dataset_43373.csv", index=False)
+
+print("Dataset successfully saved to CSV!")

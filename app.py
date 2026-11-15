@@ -194,4 +194,4 @@ def build_demo(bundle):
 
 
 if __name__ == "__main__":
-    build_demo(load_bundle()).launch(server_name="0.0.0.0", server_port=7860)
+    build_demo(load_bundle()).launch(server_name="0.0.0.0", server_port=7860, share=True)

@@ -190,6 +190,7 @@ def build_demo(bundle):
         description="When a stock suddenly gets hyped on r/wallstreetbets, how likely is it to drop "
                     "10% or more within a week? Pick a real spike to see the warning, the reasons, "
                     "and what actually happened.",
+        flagging_mode="never",
     )
 
 

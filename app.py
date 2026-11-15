@@ -8,7 +8,9 @@ Codespaces forwards port 7860: open it from the pop-up or the Ports tab.
 This project is a prototype and is not financial advice.
 """
 
+import os
 import pickle
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -122,6 +124,15 @@ def make_warn_text(bundle):
     n_quiet, n_quiet_dropped = int((~flagged).sum()), int((~flagged & dropped_all).sum())
 
     def warn_text(choice):
+        # Show any error on the page instead of failing silently
+        try:
+            return _warn_text(choice)
+        except Exception:
+            traceback.print_exc()
+            return ("**Something went wrong while building this warning.** "
+                    "Check the terminal running `python app.py` for the error.")
+
+    def _warn_text(choice):
         if not choice:
             return "Pick a stock from the list."
         ticker, date = choice.split(" — ")
@@ -190,8 +201,31 @@ def build_demo(bundle):
         description="When a stock suddenly gets hyped on r/wallstreetbets, how likely is it to drop "
                     "10% or more within a week? Pick a real spike to see the warning, the reasons, "
                     "and what actually happened.",
+        flagging_mode="never",          # hides the "Flag" button we don't need
     )
 
 
+def codespaces_url(port):
+    """
+    In GitHub Codespaces, the app is reached through a forwarded https address.
+    Gradio needs to know that address (root_path), or the page loads but clicking
+    Submit fails with "Could not parse server response".
+    """
+    name = os.environ.get("CODESPACE_NAME")
+    domain = os.environ.get("GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN")
+    if name and domain:
+        return f"https://{name}-{port}.{domain}"
+    return None
+
+
 if __name__ == "__main__":
-    build_demo(load_bundle()).launch(server_name="0.0.0.0", server_port=7860)
+    PORT = 7860
+    root = codespaces_url(PORT)
+    if root:
+        print(f"Codespaces detected. Open: {root}")
+    build_demo(load_bundle()).launch(
+        server_name="0.0.0.0",
+        server_port=PORT,
+        root_path=root or "",
+        share=True,        # also prints a public https://....gradio.live link (works for teammates too)
+    )

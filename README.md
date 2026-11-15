@@ -159,6 +159,17 @@ Volatility does most of the work, but we kept the Reddit clues in the final mode
 
 **NEGG (Newegg), July 8, 2021:** Reddit mentions spiked, the price was **up 136% in 5 days**, and the stock was extremely volatile. The model gave a **71% drop risk** and warned. **It fell 45% within 5 trading days.**
 
+### Does it treat some kinds of stocks unfairly?
+
+Our data has no people in it, so instead we checked whether the model is harsher on one **kind of stock**. Share price is one of its clues, and it learned that cheaper stocks are riskier. If it over-warns on cheap stocks, beginners would be steered away from small companies for no good reason.
+
+| Group (test months) | Spikes | Drops caught | False alarms |
+| --- | --- | --- | --- |
+| Cheap stocks (under $20) | 6 | 1 of 1 | 3 of 5 safe spikes (60%) |
+| Pricier stocks ($20+) | 18 | 7 of 7 | 5 of 11 safe spikes (45%) |
+
+The model caught every drop in both groups, but it gave false alarms on **60% of safe cheap stocks vs. 45% of safe pricier ones**, so it may be somewhat over-cautious about small companies. With only 5 safe cheap spikes, a single stock moves that number by 20 points, so this is a hint, not proof. With more data, we'd check whether the gap holds.
+
 ## Where it fails
 
 | Spike | Model risk | What happened | Why we think it went wrong |
@@ -219,7 +230,7 @@ Volatility does most of the work, but we kept the Reddit clues in the final mode
 - **The data thins out:** ~4,200 posts a day in late January, ~80 by summer.
 - **Small test pile:** 24 spikes with 8 drops; one example moves recall by 12.5 points.
 - **The test result is probably optimistic:** the model was only slightly better than always warning on the training months; the summer test months were easier.
-- **Over-cautious by design:** half the warnings in the test months were false alarms.
+- **Over-cautious by design:** half the warnings in the test months were false alarms, possibly more so for cheap stocks (60% vs. 45% of safe spikes flagged).
 - **Drops mostly reflect jumpiness, not hype:** volatility alone nearly matches the full model; Reddit clues add only a little.
 - **Big, quiet stocks count as spikes too:** a few posts about AAPL or NVDA can count; they're easy "safe" examples.
 - **Delisted stocks are missing:** our symbol list and yfinance only cover stocks that still exist, so some of the worst drops may be left out.
@@ -255,4 +266,4 @@ requirements.txt   libraries to install
 
 - **Data:** Reddit WallStreetBets Posts (Gabriel Preda, Kaggle; OpenML ID 43373) · NASDAQ Trader symbol directory · Yahoo Finance via yfinance
 - **Libraries:** pandas, NumPy, scikit-learn, yfinance, Gradio
-- **AI tools:** Claude (Anthropic) was used to help write and debug code, review our pipeline for data leakage, and explain concepts. Every part of the code was reviewed and is understood by the team.
+- **AI tools:** Claude (Anthropic) was used to write READme,add comments,debug code, review our pipeline for data leakage, and understand concepts.

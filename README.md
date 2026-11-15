@@ -8,18 +8,16 @@
 
 ---
 
-## At a glance
-
 ### 1. Who is it for?
-A teenager with a new investing account. **The moment:** they see a stock flooded with rocket emojis on r/wallstreetbets and are about to buy into the hype. Before they do, they check our tool.
+An unexperienced teenager with a new investing account. They see a stock flooded with rocket emojis on r/wallstreetbets and are about to buy into the hype. Before they do, they check our tool.
 
-This fits the Finance track's challenge: helping a person make a **safer money decision**.
+This fits the Finance track's challenge: helping a person make a safer money decision.
 
 ### 2. What goes in, and what comes out?
-**In:** a Reddit hype spike, when a stock suddenly gets at least 5 posts in a day and 5× its usual attention.
-**Out:** the chance the stock falls 10% or more within the next 5 trading days, a ⚠️ warning if that chance is 40% or higher, and specific reasons compared with past spikes.
+In: a Reddit hype spike, when a stock suddenly gets at least 5 posts in a day and 5× its usual attention.
+Out: the chance the stock falls 10% or more within the next 5 trading days, a warning if that chance is 40% or higher, and specific reasons compared with past spikes.
 
-**Real example: NEGG (Newegg), July 8, 2021.** 16× its usual Reddit attention, price already up 136% in a week, an extremely jumpy stock → **⚠️ 71% risk of a sharp drop.** It fell **45%** within 5 trading days.
+Real example: NEGG (Newegg), July 8, 2021. 16× its usual Reddit attention, price already up 136% in a week, an extremely jumpy stock -> 71% risk of a sharp drop. It fell 45% within 5 trading days.
 
 ### 3. Does it beat a simple baseline?
 Yes, but only just against the best one. On the 24 test spikes (8 followed by a sharp drop):
@@ -28,7 +26,7 @@ Yes, but only just against the best one. On the 24 test spikes (8 followed by a 
 | --- | --- | --- | --- |
 | Baseline: always warn | 24 | 8 of 8 | 16 |
 | Baseline: warn if the stock is volatile | 7 | 6 of 8 | 1 |
-| **Our model (warn at 40%+)** | 16 | **8 of 8** | 8 |
+| Our model (warn at 40%+) | 16 | 8 of 8 | 8 |
 
 Our model catches every drop with half the false alarms of always warning. The volatility rule gives fewer false alarms but misses 2 drops. That a one-question rule comes this close is our main finding: volatility explains most drops after hype, and Reddit hype adds a little.
 
@@ -41,33 +39,33 @@ Our model catches every drop with half the false alarms of always warning. The v
 
 | Step | Status |
 | --- | --- |
-| Load Reddit posts, find stock symbols, count mentions | ✅ Done |
-| Detect hype spikes | ✅ Done (123 spikes) |
-| Download prices, label sharp drops, build features | ✅ Done (82 examples) |
-| Split by date, score simple rules, train models | ✅ Done |
-| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | ✅ Done |
-| Warning cutoff chosen on training months (40%), final test result | ✅ Done |
-| Plain-language warnings with specific reasons | ✅ Done |
-| Interactive demo (Gradio app) | ✅ Done |
-| Write-up and demo video | ⏳ In progress |
+| Load Reddit posts, find stock symbols, count mentions | Done |
+| Detect hype spikes | Done (123 spikes) |
+| Download prices, label sharp drops, build features | Done (82 examples) |
+| Split by date, score simple rules, train models | Done |
+| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | Done |
+| Warning cutoff chosen on training months (40%), final test result | Done |
+| Plain-language warnings with specific reasons | Done |
+| Interactive demo (Gradio app) | Done |
+| Write-up and demo video | In progress |
 
 ## Main finding
 
-> **After a sudden Reddit hype spike, how volatile the stock already is explains most sharp drops.** Ranking spikes by volatility alone scores almost as well as our full model. Adding Reddit hype clues improved the model slightly (PR-AUC 0.90 → 0.93, catching about one more drop out of eight), but our test set is too small to be sure that improvement is real.
+> **After a sudden Reddit hype spike, how volatile the stock already is explains most sharp drops.** Ranking spikes by volatility alone scores almost as well as out full model. Adding Reddit hype clues improved the model slightly (PR-AUC 0.90 → 0.93, catching about one more drop out of eight), but our test set is too small to be sure that improvement is real.
 
-**Final result:** with a 40% warning cutoff chosen on the training months only, our model caught **all 8 sharp drops** in the test months with 16 warnings: half the false alarms of warning on every spike. It never missed a drop, but it was over-cautious: half its warnings were stocks that turned out fine.
+**Final result:** with a 40% warning cutoff chosen on the training months only, our model caught all 8 sharp drops in the test months with 16 warnings: half the false alarms of warning on every spike. It never missed a drop, but it was over-cautious: half its warnings were stocks that turned out fine.
 
-**For a beginner investor:** if a stock is suddenly hyped on Reddit **and** it's already a wild, jumpy stock, be very careful. There's a high chance it falls 10% within a week.
+**For a beginner investor:** if a stock is suddenly hyped on Reddit and it's already a wild, jumpy stock, be very careful. There's a high chance it falls 10% within a week.
 
 ## Results
 
-Scored on the **test months (June 11 – August 16, 2021)**, which the models never saw during training: **24 hype spikes, 8 of which were followed by a sharp drop** (a fall of 10%+ within 5 trading days).
+Scored on the test months (June 11 – August 16, 2021), which the models never saw during training: 24 hype spikes, 8 of which were followed by a sharp drop (a fall of 10%+ within 5 trading days).
 
 ### Final result: the model vs. simple rules
 
-A **simple rule** (baseline) is a single, hand-picked yes/no question that uses no AI, like "is the stock jumpier than usual?" Our model has to beat these to show it adds anything. If one obvious question gets the same answers, the model isn't needed.
+A simple rule (baseline) is a single, hand-picked yes/no question that uses no AI, like "is the stock jumpier than usual?" Our model has to beat these to show it adds anything. If one obvious question gets the same answers, the model isn't needed.
 
-The model gives every spike a **risk %** (the share of its 300 trees that vote "drop"). The **warning cutoff** turns that into a decision: risk of 40% or more → warn.
+The model gives every spike a risk % (the share of its 300 trees that vote "drop"). The warning cutoff turns that into a decision: risk of 40% or more → warn.
 
 | Method (24 test spikes, 8 drops) | Warnings | Drops caught | False alarms | Precision | Recall |
 | --- | --- | --- | --- | --- | --- |

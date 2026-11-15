@@ -10,22 +10,11 @@
 
 ## Who it's for
 
-A teenager with a new investing account who sees a stock flooded with rocket emojis on Reddit and is about to buy. Our tool looks at a hype spike and returns a sharp-drop risk with plain-language reasons (for example: "mentions 29× normal, price already up 70% this week"), so they can think twice before buying into the hype.
+A young adult or teenager with a new investing account who sees a stock flooded with rocket emojis on Reddit and is about to buy. Our tool looks at a hype spike and returns a sharp-drop risk with plain-language reasons (for example: "mentions 29× normal, price already up 70% this week"), so they can think twice before buying into the hype.
 
 This fits the finance track's challenge: helping a person make a **safer money decision**, and showing the model beats simple rules.
 
-## Status
 
-| Step | Status |
-| --- | --- |
-| Load Reddit posts, find stock symbols, count mentions | ✅ Done |
-| Detect hype spikes | ✅ Done (123 spikes) |
-| Download prices, label sharp drops, build features | ✅ Done (82 examples) |
-| Split by date, score simple rules, train models | ✅ Done |
-| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | ✅ Done |
-| Warning cutoff chosen on training months (40%), final test result | ✅ Done |
-| Plain-language reasons for each warning | ⏳ Sunday morning |
-| Write-up and demo video | ⏳ Sunday afternoon |
 
 ## Main finding
 
@@ -57,8 +46,8 @@ The model gives every spike a **risk %** (the share of its 300 trees that vote "
 - **Recall:** of the real drops, how many got a warning.
 
 **In plain words:**
-- Against **always warning**, the model is a clear win: it catches the same 8 drops with half the false alarms.
-- Against the **volatile-stock rule**, it's a trade-off: the rule gives far fewer false alarms (1) but **misses 2 drops**. The model misses nothing.
+- Against **always warning**, the model is a clear win because it catches the same 8 drops with half the false alarms.
+- Against the **volatile-stock rule**, it's a trade-off since the rule gives far fewer false alarms (1) but **misses 2 drops**. The model misses nothing.
 - None of the 8 spikes the model left unflagged dropped. So in the test months, **"no warning" was a reliable sign of safety**, while a warning meant "be careful" (a 50/50 chance of a sharp drop, up from 1 in 3).
 
 ### How we chose the 40% cutoff
@@ -191,17 +180,24 @@ Volatility does most of the work, but we kept the Reddit clues in the final mode
 
 ## Limitations
 
-- There is one unusual period which is Jan–Aug 2021, dominated by the GameStop mania.
-- The data ends up thinning out at 4,200 posts a day in late January, and 80 by summer.
-- There is a small test pile:24 spikes with 8 drops; one example moves recall by 12.5 points.
-- The model was only slightly better than always warning on the training months; the summer test months were easier.
-- Half the warnings in the test months were false alarms which is overcautious
--Volatility alone nearly matches the full model; Reddit clues add only a little.
-- Big, quiet stocks count as spikes too.A few posts about AAPL or NVDA can count; they're easy "safe" examples.
-- Our symbol list and yfinance only cover stocks that still exist, so some of the worst drops may be left out.
-- Shouted posts are skipped except for `$` tickers.
-- Mondays collect three days of posts, so they may spike more often.
-- A warning sign, not a cause: Reddit hype doesn't cause drops; we look for a signal that comes before them.
+- **One unusual period:** Jan–Aug 2021, dominated by the GameStop mania.
+- **The data thins out:** ~4,200 posts a day in late January, ~80 by summer.
+- **Small test pile:** 24 spikes with 8 drops; one example moves recall by 12.5 points.
+- **The test result is probably optimistic:** the model was only slightly better than always warning on the training months; the summer test months were easier.
+- **Over-cautious by design:** half the warnings in the test months were false alarms.
+- **Drops mostly reflect jumpiness, not hype:** volatility alone nearly matches the full model; Reddit clues add only a little.
+- **Big, quiet stocks count as spikes too:** a few posts about AAPL or NVDA can count; they're easy "safe" examples.
+- **Delisted stocks are missing:** our symbol list and yfinance only cover stocks that still exist, so some of the worst drops may be left out.
+- **Shouted posts are skipped** except for `$` tickers.
+- **Mondays collect three days of posts**, so they may spike more often.
+- **A warning sign, not a cause:** Reddit hype doesn't cause drops; we look for a signal that comes before them.
+
+## Future work
+
+- **Live Reddit data:** with Reddit's API, the tool could count mentions as they happen and warn about new hype spikes in real time. Prices and the 8 clues already work for any stock.
+- **More time periods:** our data covers one unusual period (the 2021 meme-stock mania). Testing on other years would show whether the patterns hold in calmer markets.
+- **More hype sources:** other subreddits, X/Twitter or StockTwits could catch hype that r/wallstreetbets misses.
+- **More examples:** with more spikes, the test results would be less sensitive to a few lucky or unlucky cases.
 
 ## Repo layout
 
@@ -209,6 +205,7 @@ Volatility does most of the work, but we kept the Reddit clues in the final mode
 project.ipynb      the full pipeline, step by step, with results
 wsb_utils.py       post-side helpers: tickers, trading days, mentions, spikes
 model_utils.py     model-side helpers: prices, labels, features
+app.py             the Gradio demo (loads the model the notebook saves)
 requirements.txt   libraries to install
 ```
 
@@ -216,11 +213,11 @@ requirements.txt   libraries to install
 
 1. Open `project.ipynb` in GitHub Codespaces (or Colab, with `wsb_utils.py` and `model_utils.py` in the same folder).
 2. Install the libraries: `pip install -r requirements.txt`
-3. Restart the kernel and **Run All**. No API keys are needed. Takes about a minute.
-
+3. Restart the kernel and **Run All**. No API keys are needed. Takes about a minute. The last cell saves the trained model to `demo_bundle.pkl`.
+4. **To open the demo:** in a terminal, run `python app.py`, then open port 7860 (in Codespaces: the pop-up, or the **Ports** tab). Press Ctrl+C to stop it.
 
 ## Credits
 
 - **Data:** Reddit WallStreetBets Posts (Gabriel Preda, Kaggle; OpenML ID 43373) · NASDAQ Trader symbol directory · Yahoo Finance via yfinance
-- **Libraries:** pandas, NumPy, scikit-learn, yfinance
-- **AI tools:** Claude (Anthropic) was used debug code, review our pipeline for data leakage, and tie together logistics of the idea. Every part of the code was reviewed and is understood by the team.
+- **Libraries:** pandas, NumPy, scikit-learn, yfinance, Gradio
+- **AI tools:** Claude (Anthropic) was used to help write and debug code, review our pipeline for data leakage, and explain concepts. Every part of the code was reviewed and is understood by the team.

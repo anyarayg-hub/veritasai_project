@@ -8,13 +8,48 @@
 
 ---
 
-## Who it's for
+## At a glance
 
-A young adult or teenager with a new investing account who sees a stock flooded with rocket emojis on Reddit and is about to buy. Our tool looks at a hype spike and returns a sharp-drop risk with plain-language reasons (for example: "mentions 29× normal, price already up 70% this week"), so they can think twice before buying into the hype.
+### 1. Who is it for?
+A teenager with a new investing account. **The moment:** they see a stock flooded with rocket emojis on r/wallstreetbets and are about to buy into the hype. Before they do, they check our tool.
 
-This fits the finance track's challenge: helping a person make a **safer money decision**, and showing the model beats simple rules.
+This fits the Finance track's challenge: helping a person make a **safer money decision**.
 
+### 2. What goes in, and what comes out?
+**In:** a Reddit hype spike, when a stock suddenly gets at least 5 posts in a day and 5× its usual attention.
+**Out:** the chance the stock falls 10% or more within the next 5 trading days, a ⚠️ warning if that chance is 40% or higher, and specific reasons compared with past spikes.
 
+**Real example: NEGG (Newegg), July 8, 2021.** 16× its usual Reddit attention, price already up 136% in a week, an extremely jumpy stock → **⚠️ 71% risk of a sharp drop.** It fell **45%** within 5 trading days.
+
+### 3. Does it beat a simple baseline?
+Yes, but only just against the best one. On the 24 test spikes (8 followed by a sharp drop):
+
+| Method | Warnings | Drops caught | False alarms |
+| --- | --- | --- | --- |
+| Baseline: always warn | 24 | 8 of 8 | 16 |
+| Baseline: warn if the stock is volatile | 7 | 6 of 8 | 1 |
+| **Our model (warn at 40%+)** | 16 | **8 of 8** | 8 |
+
+Our model catches every drop with half the false alarms of always warning. The volatility rule gives fewer false alarms but misses 2 drops. That a one-question rule comes this close is our main finding: volatility explains most drops after hype, and Reddit hype adds a little.
+
+### 4. Where does it fail?
+- **False alarm: PLTR, Aug 12, 2021** (54% risk, fell only 4.9%). A popular, moderately jumpy stock that didn't drop. The model leans heavily on volatility, so it over-warns on stocks like this.
+- **Near miss: ASO, Jun 14, 2021** (43% risk, fell 10.7%). A calm stock that just crossed the 10% line. The model expects drops from jumpy stocks, so calm ones that drop get low scores.
+- **Overall:** half its warnings were false alarms, and on the training months it was only slightly better than always warning, so our test result is probably optimistic.
+
+## Status
+
+| Step | Status |
+| --- | --- |
+| Load Reddit posts, find stock symbols, count mentions | ✅ Done |
+| Detect hype spikes | ✅ Done (123 spikes) |
+| Download prices, label sharp drops, build features | ✅ Done (82 examples) |
+| Split by date, score simple rules, train models | ✅ Done |
+| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | ✅ Done |
+| Warning cutoff chosen on training months (40%), final test result | ✅ Done |
+| Plain-language warnings with specific reasons | ✅ Done |
+| Interactive demo (Gradio app) | ✅ Done |
+| Write-up and demo video | ⏳ In progress |
 
 ## Main finding
 
@@ -46,8 +81,8 @@ The model gives every spike a **risk %** (the share of its 300 trees that vote "
 - **Recall:** of the real drops, how many got a warning.
 
 **In plain words:**
-- Against **always warning**, the model is a clear win because it catches the same 8 drops with half the false alarms.
-- Against the **volatile-stock rule**, it's a trade-off since the rule gives far fewer false alarms (1) but **misses 2 drops**. The model misses nothing.
+- Against **always warning**, the model is a clear win: it catches the same 8 drops with half the false alarms.
+- Against the **volatile-stock rule**, it's a trade-off: the rule gives far fewer false alarms (1) but **misses 2 drops**. The model misses nothing.
 - None of the 8 spikes the model left unflagged dropped. So in the test months, **"no warning" was a reliable sign of safety**, while a warning meant "be careful" (a 50/50 chance of a sharp drop, up from 1 in 3).
 
 ### How we chose the 40% cutoff

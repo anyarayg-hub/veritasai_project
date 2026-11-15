@@ -2,10 +2,6 @@
 
 **Veritas AI International High School Hackathon 2026 · AI + Finance track**
 
-> When a stock suddenly gets hyped on r/wallstreetbets, can we predict whether it drops 10% or more within the next 5 trading days?
-
-**This project is a prototype and is not financial advice.**
-
 ---
 
 ### 1. Who is it for?

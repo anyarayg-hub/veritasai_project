@@ -148,13 +148,13 @@ def make_warn_text(bundle):
 
         if risk >= cutoff:
             level = "High" if risk >= 0.6 else "Elevated"
-            lines += [f"### ⚠️ {level} risk of a sharp drop: {risk:.0%}",
+            lines += [f"### {level} risk of a sharp drop: {risk:.0%}",
                       f"Our model thinks {ticker} has a {risk:.0%} chance of falling 10% or more within the next "
                       f"5 trading days. When it warned during testing, the stock dropped that much "
                       f"{n_warn_right} times out of {n_warn}, so a warning means *be careful*, not *it will "
                       f"definitely fall*.", ""]
         else:
-            lines += [f"### ✅ Lower risk: {risk:.0%}",
+            lines += [f"### Lower risk: {risk:.0%}",
                       f"Our model gives {ticker} a {risk:.0%} chance of falling 10% or more within the next "
                       f"5 trading days. In testing, "
                       + (f"none of the {n_quiet}" if n_quiet_dropped == 0 else f"{n_quiet_dropped} of the {n_quiet}")
@@ -176,9 +176,9 @@ def make_warn_text(bundle):
                   f"**What actually happened:** over the next 5 trading days, {ticker}'s lowest price was "
                   f"{fell:+.0%} from that day's close → " + ("**a sharp drop**." if dropped else "**no sharp drop**."),
                   "",
-                  "✅ The model got this one right." if right else
-                  ("❌ False alarm: the model warned, but the stock held up." if risk >= cutoff else
-                   "❌ Missed: the model didn't warn, but the stock dropped."),
+                  "The model got this one right." if right else
+                  ("False alarm: the model warned, but the stock held up." if risk >= cutoff else
+                   "Missed: the model didn't warn, but the stock dropped."),
                   "",
                   "*Prototype, not financial advice. These spikes are from June–August 2021, months the model "
                   "never trained on.*"]

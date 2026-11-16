@@ -1,19 +1,25 @@
-# WSB Hype Crash Warning
+# WSB Hype Drop Warning
 
 **Veritas AI International High School Hackathon 2026 · AI + Finance track**
 
+> When a stock suddenly gets hyped on r/wallstreetbets, can we predict whether it drops 10% or more within the next 5 trading days?
+
+**This project is a prototype and is not financial advice.**
+
 ---
 
-### 1. Who is it for?
-An unexperienced teenager with a new investing account. They see a stock flooded with rocket emojis on r/wallstreetbets and are about to buy into the hype. Before they do, they check our tool.
+## At a glance
 
-This fits the Finance track's challenge: helping a person make a safer money decision.
+### 1. Who is it for?
+A teenager with a new investing account. **The moment:** they see a stock flooded with rocket emojis on r/wallstreetbets and are about to buy into the hype. Before they do, they check our tool.
+
+This fits the Finance track's challenge: helping a person make a **safer money decision**.
 
 ### 2. What goes in, and what comes out?
-In: a Reddit hype spike, when a stock suddenly gets at least 5 posts in a day and 5× its usual attention.
-Out: the chance the stock falls 10% or more within the next 5 trading days, a warning if that chance is 40% or higher, and specific reasons compared with past spikes.
+**In:** a Reddit hype spike, when a stock suddenly gets at least 5 posts in a day and 5× its usual attention.
+**Out:** the chance the stock falls 10% or more within the next 5 trading days, a ⚠️ warning if that chance is 40% or higher, and specific reasons compared with past spikes.
 
-Real example: NEGG (Newegg), July 8, 2021. 16× its usual Reddit attention, price already up 136% in a week, an extremely jumpy stock -> 71% risk of a sharp drop. It fell 45% within 5 trading days.
+**Real example: NEGG (Newegg), July 8, 2021.** 16× its usual Reddit attention, price already up 136% in a week, an extremely jumpy stock → **⚠️ 71% risk of a sharp drop.** It fell **45%** within 5 trading days.
 
 ### 3. Does it beat a simple baseline?
 Yes, but only just against the best one. On the 24 test spikes (8 followed by a sharp drop):
@@ -22,7 +28,7 @@ Yes, but only just against the best one. On the 24 test spikes (8 followed by a 
 | --- | --- | --- | --- |
 | Baseline: always warn | 24 | 8 of 8 | 16 |
 | Baseline: warn if the stock is volatile | 7 | 6 of 8 | 1 |
-| Our model (warn at 40%+) | 16 | 8 of 8 | 8 |
+| **Our model (warn at 40%+)** | 16 | **8 of 8** | 8 |
 
 Our model catches every drop with half the false alarms of always warning. The volatility rule gives fewer false alarms but misses 2 drops. That a one-question rule comes this close is our main finding: volatility explains most drops after hype, and Reddit hype adds a little.
 
@@ -35,40 +41,40 @@ Our model catches every drop with half the false alarms of always warning. The v
 
 | Step | Status |
 | --- | --- |
-| Load Reddit posts, find stock symbols, count mentions | Done |
-| Detect hype spikes | Done (123 spikes) |
-| Download prices, label sharp drops, build features | Done (82 examples) |
-| Split by date, score simple rules, train models | Done |
-| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | Done |
-| Warning cutoff chosen on training months (40%), final test result | Done |
-| Plain-language warnings with specific reasons | Done |
-| Interactive demo (Gradio app) | Done |
-| Write-up and demo video | In progress |
+| Load Reddit posts, find stock symbols, count mentions | ✅ Done |
+| Detect hype spikes | ✅ Done (121 spikes) |
+| Download prices, label sharp drops, build features | ✅ Done (80 examples) |
+| Split by date, score simple rules, train models | ✅ Done |
+| Checks: random seeds, shuffled labels, volatility rule, Reddit vs. no Reddit | ✅ Done |
+| Warning cutoff chosen on training months (40%), final test result | ✅ Done |
+| Plain-language warnings with specific reasons | ✅ Done |
+| Interactive demo (Gradio app) | ✅ Done |
+| Write-up and demo video | ⏳ In progress |
 
 ## Main finding
 
-> **After a sudden Reddit hype spike, how volatile the stock already is explains most sharp drops.** Ranking spikes by volatility alone scores almost as well as out full model. Adding Reddit hype clues improved the model slightly (PR-AUC 0.90 → 0.93, catching about one more drop out of eight), but our test set is too small to be sure that improvement is real.
+> **After a sudden Reddit hype spike, how volatile the stock already is explains most sharp drops.** Ranking spikes by volatility alone scores almost as well as our full model. Adding Reddit hype clues improved the model slightly (PR-AUC 0.90 → 0.93, catching about one more drop out of eight), but our test set is too small to be sure that improvement is real.
 
-**Final result:** with a 40% warning cutoff chosen on the training months only, our model caught all 8 sharp drops in the test months with 16 warnings: half the false alarms of warning on every spike. It never missed a drop, but it was over-cautious: half its warnings were stocks that turned out fine.
+**Final result:** with a 40% warning cutoff chosen on the training months only, our model caught **all 8 sharp drops** in the test months with 16 warnings: half the false alarms of warning on every spike. It never missed a drop, but it was over-cautious: half its warnings were stocks that turned out fine.
 
-**For a beginner investor:** if a stock is suddenly hyped on Reddit and it's already a wild, jumpy stock, be very careful. There's a high chance it falls 10% within a week.
+**For a beginner investor:** if a stock is suddenly hyped on Reddit **and** it's already a wild, jumpy stock, be very careful. There's a high chance it falls 10% within a week.
 
 ## Results
 
-Scored on the test months (June 11 – August 16, 2021), which the models never saw during training: 24 hype spikes, 8 of which were followed by a sharp drop (a fall of 10%+ within 5 trading days).
+Scored on the **test months (June 11 – August 16, 2021)**, which the models never saw during training: **24 hype spikes, 8 of which were followed by a sharp drop** (a fall of 10%+ within 5 trading days).
 
 ### Final result: the model vs. simple rules
 
-A simple rule (baseline) is a single, hand-picked yes/no question that uses no AI, like "is the stock jumpier than usual?" Our model has to beat these to show it adds anything. If one obvious question gets the same answers, the model isn't needed.
+A **simple rule** (baseline) is a single, hand-picked yes/no question that uses no AI, like "is the stock jumpier than usual?" Our model has to beat these to show it adds anything. If one obvious question gets the same answers, the model isn't needed.
 
-The model gives every spike a risk % (the share of its 300 trees that vote "drop"). The warning cutoff turns that into a decision: risk of 40% or more → warn.
+The model gives every spike a **risk %** (the share of its 300 trees that vote "drop"). The **warning cutoff** turns that into a decision: risk of 40% or more → warn.
 
 | Method (24 test spikes, 8 drops) | Warnings | Drops caught | False alarms | Precision | Recall |
 | --- | --- | --- | --- | --- | --- |
 | **Random forest, warn at 40%+ (final)** | 16 | **8 of 8** | 8 | 0.50 | **1.00** |
 | Rule: volatile stock (above the median training spike) | 7 | 6 of 8 | 1 | 0.86 | 0.75 |
-| Rule: volume 3× normal | *TODO* | *TODO* | *TODO* | *TODO* | *TODO* |
-| Rule: already up 50%+ this week | *TODO* | *TODO* | *TODO* | *TODO* | *TODO* |
+| Rule: volume 3× normal | 7 | 5 of 8 | 2 | 0.71 | 0.62 |
+| Rule: already up 50%+ this week | 2 | 2 of 8 | 0 | 1.00 | 0.25 |
 | Always warn | 24 | 8 of 8 | 16 | 0.33 | 1.00 |
 
 - **Precision:** of the warnings, how many were real drops.
@@ -189,10 +195,10 @@ The model caught every drop in both groups, but it gave false alarms on **60% of
 1. **Find stock symbols in each post.** We look for `$TICKER` (any case) and 2–5 letter capital words, keep only real symbols, and drop slang and English words (`DD`, `YOLO`, `RH` = Robinhood, `HF` = hedge funds, `ALL`, `NOW`...). Single letters need a `$`. Posts written mostly in capitals only count `$` tickers. Each stock counts once per post.
 2. **Put each post on the right trading day.** Posts after the 4 PM ET close move to the next day; weekend posts move to Monday.
 3. **Count mentions** per stock per trading day.
-4. **Find hype spikes:** at least **5 posts** about a stock in a day and at least **5×** its average over the previous **14 calendar days**. Result: **123 spikes**.
-5. **Download prices** for the spiked stocks (50 of 51; HOOD only listed on July 29, 2021).
-6. **Build one example per spike,** keeping only the first spike per stock per week (one hype wave = one example): **82 examples**.
-   - **Label:** a **sharp drop** = the lowest price in the next 5 trading days is 10%+ below the spike day's close. 28 of 82 spikes (34%).
+4. **Find hype spikes:** at least **5 posts** about a stock in a day and at least **5×** its average over the previous **14 calendar days**. Result: **121 spikes**.
+5. **Download prices** for the spiked stocks (48 of 49; HOOD only listed on July 29, 2021).
+6. **Build one example per spike,** keeping only the first spike per stock per week (one hype wave = one example): **80 examples**.
+   - **Label:** a **sharp drop** = the lowest price in the next 5 trading days is 10%+ below the spike day's close. 28 of 80 spikes (35%).
    - **Features** (all known at the spike day's close): mentions, spike size, 5- and 20-day price change, volume vs. normal, 20-day volatility, share price, S&P 500 change.
 7. **Split by date:** train on spikes before June 11, 2021, test on spikes after (24 spikes, 8 drops), with a 7-day gap. Never random.
 8. **Score simple rules, then train** logistic regression and a random forest with balanced class weights.
@@ -202,7 +208,7 @@ The model caught every drop in both groups, but it gave false alarms on **60% of
 | Choice | Why |
 | --- | --- |
 | Spike = 5× normal with at least 5 posts | 5× keeps spikes clearly sudden. A 10-post minimum gave only 46 spikes, because later months have ~80 posts a day |
-| Sharp drop = 10%+ in 5 trading days | At 20%, only 7 of 82 spikes counted, too few to test fairly. A 10% loss in one week is about a year's average market return. Chosen **before** training any model |
+| Sharp drop = 10%+ in 5 trading days | At 20%, only 7 of 80 spikes counted, too few to test fairly. A 10% loss in one week is about a year's average market return. Chosen **before** training any model |
 | Split by date with a 7-day gap | Like real use: learn from the past, predict the future. The gap stops training labels from peeking into the test period |
 | Use the `created` timestamp (UTC) | The time zone of the `timestamp` column is unknown |
 
@@ -214,8 +220,8 @@ The model caught every drop in both groups, but it gave false alarms on **60% of
 | Words counted as stocks | `AIN` (from "AIN'T"), `AWAY`, `BEAT`, single letters, `RH` (Robinhood), `HF` (hedge funds), `SPY`, `AKA`, `PC`, `IP` (intellectual property)... | More stopwords after each top-40 check, single letters need `$`, apostrophes don't split words, shouted posts only count `$` tickers |
 | Wrong baseline average | Days with zero mentions were skipped, so averages were too high | Average over a full calendar-day grid with zeros |
 | Hype counted too early | Posts after the 4 PM close counted toward that day's closing price | Move them to the next trading day |
-| Too few spikes | Only 46 with a 10-post minimum | Lowered the minimum to 5 posts, kept the 5× jump (123 spikes) |
-| Too few drops | 7 of 82 at a 20% line | 10% line (28 drops), fixed before training |
+| Too few spikes | Only 46 with a 10-post minimum | Lowered the minimum to 5 posts, kept the 5× jump (121 spikes) |
+| Too few drops | 7 of 80 at a 20% line | 10% line (28 drops), fixed before training |
 | Wrong labels in the split | The split ran before the relabel cell, so it used the old 20% labels | Reordered the notebook so every cell runs top to bottom |
 
 ## Limitations
@@ -260,4 +266,4 @@ requirements.txt   libraries to install
 
 - **Data:** Reddit WallStreetBets Posts (Gabriel Preda, Kaggle; OpenML ID 43373) · NASDAQ Trader symbol directory · Yahoo Finance via yfinance
 - **Libraries:** pandas, NumPy, scikit-learn, yfinance, Gradio
-- **AI tools:** Claude (Anthropic) was used to write READme,add comments,debug code, review our pipeline for data leakage, and understand concepts.
+- **AI tools:** Claude (Anthropic) was used to help write and debug code, review our pipeline for data leakage, and explain concepts. Every part of the code was reviewed and is understood by the team.
